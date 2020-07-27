@@ -67,7 +67,11 @@ module.exports = {
     async update(request, response) 
     {
         const { id } = request.params;
-        const { name, bio, techs, latitude, longitude } = request.body;
+        const { github_user, techs, latitude, longitude } = request.body;
+
+        const apiResponse = await axios.get('https://api.github.com/users/' + github_user);
+    
+        const { name = login, avatar_url, bio } = apiResponse.data;
 
         const techsArray = parseStringToArray(techs);
     
@@ -77,8 +81,9 @@ module.exports = {
         };
     
         dev = await Dev.updateOne({ _id: id }, { 
-            name, 
-            bio, 
+            name,
+            avatar_url,
+            bio,
             techs: techsArray,
             location
         });
